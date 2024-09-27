@@ -1,0 +1,30 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Java Streams Lambdas Test
+      id: java-streams-lambdas-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Java Streams Lambdas Test
+        setup-command: ''
+        command: gradle test
+        timeout: 10
+        max-score: 100
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        JAVA-STREAMS-LAMBDAS-TEST_RESULTS: "${{steps.java-streams-lambdas-test.outputs.result}}"
+      with:
+        runners: java-streams-lambdas-test
